@@ -1,39 +1,57 @@
 # Modern ML Cookiecutter
 
-🚀 A high-performance, end-to-end template for modern machine learning projects that accelerates development from local prototyping to scalable cloud deployment.
+🚀 A modality-aware, end-to-end template for modern machine learning projects covering **NLP**, **Speech**, and **Vision** with best-in-class models and researcher-friendly configuration.
 
 ## ✨ Features
 
-- **Fast Dependency Management**: Uses [uv](https://github.com/astral-sh/uv) for lightning-fast package management
-- **Local & Cloud Training**: Seamless training with Hugging Face Accelerate locally or SkyPilot in the cloud
-- **Production-Ready Serving**: High-performance model serving with LitServe
-- **Type-Safe Configuration**: Pydantic-based settings management
-- **Code Quality**: Pre-configured with ruff, mypy, and pytest
-- **CI/CD Ready**: GitHub Actions workflow included
+- **🎯 Multi-Modal Support**: Choose from NLP (DistilBERT), Speech (Whisper), or Vision (ViT) with optimized configurations
+- **⚡ Fast Dependency Management**: Uses [uv](https://github.com/astral-sh/uv) for lightning-fast package management
+- **🧠 ML-Centric Configuration**: Researcher-friendly parameter names (`epochs` not `num_train_epochs`)
+- **🖥️ Mac MPS Support**: Optimized for Apple Silicon with Metal Performance Shaders
+- **☁️ Local & Cloud Training**: Seamless training with Hugging Face Accelerate locally or SkyPilot in the cloud
+- **🚀 Production-Ready Serving**: High-performance model serving with LitServe
+- **📊 Experiment Tracking**: Optional integration with [tracelet](https://github.com/prassanna-ravishankar/tracelet)
+- **🔧 Type-Safe Configuration**: Pydantic-based settings with modality-aware validation
+
+## 🎯 Supported Modalities
+
+| Modality | Model | Dataset | Key Libraries |
+|----------|-------|---------|---------------|
+| **NLP** | DistilBERT | IMDB | transformers, datasets |
+| **Speech** | Whisper | Common Voice | whisper, librosa, torchaudio |
+| **Vision** | Vision Transformer | CIFAR-10 | torchvision, PIL, opencv |
 
 ## 🚀 Quick Start
 
 1. Install cookiecutter:
 ```bash
-pip install cookiecutter
+uv tool install cookiecutter
+# or: pip install cookiecutter
 ```
 
 2. Generate a new project:
 ```bash
-cookiecutter https://github.com/yourusername/cookiecutter-modern-ml
+cookiecutter https://github.com/prassanna-ravishankar/cookiecutter-modern-ml
 ```
 
-3. Answer the prompts:
-- `project_name`: Your project's human-readable name
-- `author_name`: Your name
-- `model_checkpoint`: Hugging Face model to fine-tune (default: distilbert-base-uncased)
-- `default_cloud`: Your preferred cloud provider (gcp/aws/azure)
+3. Choose your modality and configuration:
+```
+[1/11] project_name (My ML Project): Sentiment Analysis Bot
+[2/11] Select modality:
+  1 - nlp
+  2 - speech  
+  3 - vision
+  Choose from [1/2/3] (1): 1
+[3/11] Select use_tracelet:
+  1 - yes
+  2 - no
+```
 
-4. Navigate to your new project and start developing:
+4. Start developing:
 ```bash
-cd your_project_name
-uv sync --all-extras
-uv run train-local
+cd sentiment_analysis_bot
+uv sync
+uv run task train
 ```
 
 ## 📋 What's Included
@@ -41,78 +59,161 @@ uv run train-local
 ### Project Structure
 ```
 your_project/
-├── .github/workflows/    # CI/CD pipelines
-├── configs/             # Configuration files
-├── models/              # Trained model artifacts
-├── notebooks/           # Jupyter notebooks
-├── src/                 # Source code
-│   ├── config.py        # Configuration management
-│   ├── deployment/      # Model serving
-│   └── models/          # Training scripts
-├── tests/               # Test files
-├── pyproject.toml       # Project dependencies
-├── sky_task.yaml        # Cloud training config
-└── README.md            # Project documentation
+├── .github/workflows/    # Modern CI with astral-sh/setup-uv
+├── configs/             # ML-centric YAML configuration
+├── models/              # Trained model artifacts  
+├── notebooks/           # Jupyter notebooks (optional)
+├── your_package/        # Source code
+│   ├── config.py        # Modality-aware configuration
+│   ├── data_utils.py    # Polars-based data processing
+│   ├── deployment/      # LitServe model serving
+│   └── models/          # Modality-specific training
+├── tests/               # Pytest test suite
+├── pyproject.toml       # Modern Python packaging
+└── sky_task.yaml        # Cloud training config
 ```
 
 ### Pre-configured Tools
 
 - **uv**: Ultra-fast Python package management
-- **Hugging Face Transformers**: State-of-the-art models
-- **Accelerate**: Multi-device training support
+- **Transformers**: State-of-the-art models for all modalities
+- **Accelerate**: Multi-device training (CUDA/MPS/CPU)
 - **LitServe**: High-performance model serving
-- **SkyPilot**: Cloud-agnostic training orchestration
+- **Polars**: Fast data processing (not pandas)
+- **Pydantic**: Type-safe configuration management
 - **Ruff**: Fast Python linter and formatter
-- **Mypy**: Static type checking
 - **Pytest**: Testing framework
 
-## 🎯 Example Use Case
+## 🎯 Example Workflows
 
-The template comes with a complete example that fine-tunes a DistilBERT model on the IMDB dataset for sentiment classification:
-
-1. **Train locally**: `uv run train-local`
-2. **Train on cloud**: `uv run train-cloud`
-3. **Serve the model**: `uv run serve`
-4. **Make predictions**:
+### NLP: Sentiment Analysis
 ```bash
+# Train DistilBERT on IMDB
+uv run task train
+
+# Serve the model
+uv run task serve
+
+# Test inference
 curl -X POST "http://localhost:8000/predict" \
   -H "Content-Type: application/json" \
   -d '{"text": "This movie was amazing!"}'
 ```
 
-## 🔧 Customization
+### Vision: Image Classification  
+```bash
+# Train ViT on CIFAR-10
+uv run task train
 
-### Change the Default Model
-
-Edit `configs/settings.yaml`:
-```yaml
-model:
-  checkpoint: "bert-base-uncased"  # or any Hugging Face model
+# The model automatically detects Mac MPS, CUDA, or CPU
+# Batch sizes adjust automatically for memory constraints
 ```
 
-### Add New Dependencies
+### Speech: Automatic Speech Recognition
+```bash
+# Train Whisper on Common Voice
+uv run task train
+
+# Optimized for speech processing with librosa integration
+```
+
+## 🔧 Configuration
+
+### ML-Researcher Friendly Settings
+
+```yaml
+# configs/settings.yaml
+modality: "nlp"
+
+experiment:
+  name: "bert_baseline"
+  seed: 42
+
+training:
+  epochs: 5           # Not num_train_epochs!
+  batch_size: 32      # Not per_device_train_batch_size!
+  learning_rate: 3e-4
+  warmup_ratio: 0.1
+
+model:
+  checkpoint: "distilbert-base-uncased"
+  max_length: 512
+  dropout: 0.1
+
+compute:
+  device: "auto"      # Automatically detects MPS/CUDA/CPU
+  fp16: true
+  gradient_checkpointing: true
+```
+
+### Quick Experiment Setup
+
+```python
+from your_package.config import create_experiment_config
+
+# Researcher-friendly experiment creation
+config = create_experiment_config(
+    name="distilbert_large_lr",
+    learning_rate=5e-4,
+    epochs=10,
+    batch_size=64
+)
+```
+
+### Modality-Specific Features
+
+- **NLP**: Automatic tokenizer padding, sequence classification metrics
+- **Speech**: Sample rate handling, audio preprocessing, WER metrics  
+- **Vision**: Image preprocessing, patch-based transformers, classification metrics
+
+## 📊 Device Optimization
+
+The template automatically optimizes for your hardware:
+
+- **Mac MPS**: Optimized batch sizes, no fp16, proper memory pinning
+- **CUDA**: Full fp16, TensorFloat-32, optimal batch sizes
+- **CPU**: Conservative batch sizes, fp32, minimal workers
+
+## ☁️ Cloud Training
+
+Deploy to any cloud with SkyPilot:
 
 ```bash
-uv add transformers datasets torch
-uv add --dev pytest ruff mypy
+uv run task train-cloud
 ```
 
-### Configure Cloud Training
+Supports AWS, GCP, Azure with spot instance optimization.
 
-Edit `sky_task.yaml` to customize instance types, regions, and resources.
+## 🧪 Testing
+
+Run the full test suite:
+
+```bash
+python3 self_test.py  # Validate template completeness
+uv run task test      # Run generated project tests
+uv run task lint      # Code quality checks
+```
 
 ## 📚 Documentation
 
 - [uv Documentation](https://github.com/astral-sh/uv)
-- [Hugging Face Transformers](https://huggingface.co/docs/transformers)
-- [Accelerate Documentation](https://huggingface.co/docs/accelerate)
+- [Hugging Face Transformers](https://huggingface.co/docs/transformers)  
 - [LitServe Documentation](https://github.com/Lightning-AI/litserve)
-- [SkyPilot Documentation](https://skypilot.readthedocs.io/)
+- [SkyPilot Documentation](https://docs.skypilot.co/)
+- [Tracelet Experiment Tracking](https://github.com/prassanna-ravishankar/tracelet)
+
+## 🎨 Design Philosophy
+
+- **Simplicity over Features**: Avoid over-engineering, focus on researcher needs
+- **ML-Centric**: Parameter names and structure match ML research conventions
+- **Modality-Aware**: Each domain (NLP/Speech/Vision) has optimized defaults
+- **Modern Tooling**: Latest best practices (uv, Polars, LitServe, Pydantic)
+- **Mac-First**: Optimized for Apple Silicon development
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! This template prioritizes simplicity and researcher experience.
 
 ## 📄 License
 
-This project is licensed under the MIT License.
+MIT License - build amazing ML projects!
