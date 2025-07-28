@@ -6,7 +6,7 @@ import litserve as ls
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-from src.config import get_settings
+from {{ cookiecutter.package_name }}.config import get_settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

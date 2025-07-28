@@ -8,42 +8,59 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     strategy:
+      fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest]
         python-version: ['{{ cookiecutter.python_version }}']
 
     steps:
     - uses: actions/checkout@v4
     
-    - name: Install uv
+    - name: Set up uv
       uses: astral-sh/setup-uv@v3
+      with:
+        enable-cache: true
       
-    - name: Set up Python
-      run: uv python install ${{ matrix.python-version }}
+    - name: Set up Python {% raw %}${{ matrix.python-version }}{% endraw %}
+      run: uv python install {% raw %}${{ matrix.python-version }}{% endraw %}
       
     - name: Install dependencies
-      run: |
-        uv sync --all-extras
+      run: uv sync --all-extras
         
-    - name: Lint with ruff
+    - name: Lint with {{ cookiecutter.code_formatter }}
       run: |
-        uv run ruff check src tests
+        {% if cookiecutter.code_formatter == "ruff" -%}
+        uv run ruff check {{ cookiecutter.package_name }} tests
+        uv run ruff format --check {{ cookiecutter.package_name }} tests
+        {% else -%}
+        uv run ruff check {{ cookiecutter.package_name }} tests
+        uv run black --check {{ cookiecutter.package_name }} tests
+        {% endif %}
         
-    - name: Format check with ruff
+    {% if cookiecutter.type_checker != "none" -%}
+    - name: Type check with {{ cookiecutter.type_checker }}
+      run: uv run {{ cookiecutter.type_checker }} {{ cookiecutter.package_name }}
+    {% endif %}
+        
+    - name: Test with {{ cookiecutter.test_framework }}
       run: |
-        uv run ruff format --check src tests
+        {% if cookiecutter.test_framework == "pytest" -%}
+        {% if cookiecutter.code_coverage_tool != "none" -%}
+        uv run pytest tests --cov={{ cookiecutter.package_name }} --cov-report=xml
+        {% else -%}
+        uv run pytest tests
+        {% endif -%}
+        {% else -%}
+        uv run python -m unittest discover tests
+        {% endif %}
         
-    - name: Type check with mypy
-      run: |
-        uv run mypy src
-        
-    - name: Test with pytest
-      run: |
-        uv run pytest tests --cov=src --cov-report=xml
-        
+    {% if cookiecutter.code_coverage_tool == "codecov" -%}
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v4
+      if: matrix.os == 'ubuntu-latest'
       with:
         file: ./coverage.xml
-        fail_ci_if_error: true
+        fail_ci_if_error: false
+    {% endif %}

@@ -1,0 +1,55 @@
+.PHONY: help build-base build-train build-serve build-all train serve jupyter clean
+
+# Variables
+PROJECT_NAME={{ cookiecutter.project_slug }}
+VERSION={{ cookiecutter.project_version }}
+DOCKER_DIR={% if cookiecutter.docker_support == "yes" %}docker{% else %}.{% endif %}
+
+help: ## Show this help message
+	@echo "Available commands:"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+build-base: ## Build base Docker image
+	docker build -f $(DOCKER_DIR)/Dockerfile.base -t $(PROJECT_NAME):base-$(VERSION) .
+
+build-train: ## Build training Docker image
+	docker build -f $(DOCKER_DIR)/Dockerfile.train -t $(PROJECT_NAME):train-$(VERSION) .
+
+build-serve: ## Build serving Docker image
+	docker build -f $(DOCKER_DIR)/Dockerfile.serve -t $(PROJECT_NAME):serve-$(VERSION) .
+
+build-all: build-base build-train build-serve ## Build all Docker images
+
+train: ## Run training in Docker
+	{% if cookiecutter.use_docker_compose == "yes" -%}
+	docker-compose --profile training up train
+	{% else -%}
+	docker run --rm -v $(PWD)/models:/app/models -v $(PWD)/logs:/app/logs $(PROJECT_NAME):train-$(VERSION)
+	{% endif %}
+
+serve: ## Run serving in Docker
+	{% if cookiecutter.use_docker_compose == "yes" -%}
+	docker-compose --profile serving up serve
+	{% else -%}
+	docker run --rm -p 8000:8000 -v $(PWD)/models:/app/models:ro $(PROJECT_NAME):serve-$(VERSION)
+	{% endif %}
+
+{% if cookiecutter.include_notebooks == "yes" -%}
+jupyter: ## Run Jupyter lab in Docker
+	{% if cookiecutter.use_docker_compose == "yes" -%}
+	docker-compose --profile development up jupyter
+	{% else -%}
+	docker run --rm -p 8888:8888 -v $(PWD):/app $(PROJECT_NAME):train-$(VERSION) uv run jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+	{% endif %}
+{% endif %}
+
+clean: ## Clean up Docker images and containers
+	docker system prune -f
+	docker image prune -f
+
+logs: ## Show container logs
+	{% if cookiecutter.use_docker_compose == "yes" -%}
+	docker-compose logs -f
+	{% else -%}
+	docker logs -f $(PROJECT_NAME)
+	{% endif %}

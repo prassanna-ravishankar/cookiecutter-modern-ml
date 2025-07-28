@@ -1,0 +1,64 @@
+# Inference Dockerfile for {{ cookiecutter.project_name }}
+# Optimized for serving models in production
+
+FROM python:{{ cookiecutter.python_version }}-slim
+
+# Set environment variables for serving
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    HF_HOME=/app/.cache/huggingface \
+    TRANSFORMERS_CACHE=/app/.cache/huggingface/transformers
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /usr/local/bin/
+
+# Set working directory
+WORKDIR /app
+
+# Copy project files (production-only)
+COPY pyproject.toml uv.lock* ./
+COPY {{ cookiecutter.package_name }}/ ./{{ cookiecutter.package_name }}/
+COPY configs/ ./configs/
+
+# Install only production dependencies
+RUN uv sync --frozen --no-cache --no-dev
+
+# Copy trained models (should be mounted or built in)
+COPY models/ ./models/
+
+# Create non-root user for security
+RUN useradd --create-home --shell /bin/bash --uid 1000 app && \
+    chown -R app:app /app
+USER app
+
+# Set Python path
+ENV PYTHONPATH=/app
+
+# Expose the serving port
+EXPOSE 8000
+
+# Default command for serving
+{% if cookiecutter.serving_framework == "litserve" -%}
+CMD ["uv", "run", "python", "-m", "{{ cookiecutter.package_name }}.deployment.serve"]
+{% elif cookiecutter.serving_framework == "fastapi" -%}
+CMD ["uv", "run", "uvicorn", "{{ cookiecutter.package_name }}.deployment.serve:app", "--host", "0.0.0.0", "--port", "8000"]
+{% else -%}
+CMD ["uv", "run", "python", "-m", "{{ cookiecutter.package_name }}.deployment.serve"]
+{% endif %}
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health || exit 1
+
+# Labels for metadata
+LABEL maintainer="{{ cookiecutter.author_name }} <{{ cookiecutter.author_email }}>" \
+      version="{{ cookiecutter.project_version }}" \
+      description="Inference container for {{ cookiecutter.project_name }}" \
+      purpose="serving"

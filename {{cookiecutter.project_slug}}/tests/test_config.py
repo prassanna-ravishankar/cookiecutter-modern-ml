@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from src.config import Settings, get_settings
+from {{ cookiecutter.package_name }}.config import Settings, get_settings
 
 
 def test_settings_from_yaml():
