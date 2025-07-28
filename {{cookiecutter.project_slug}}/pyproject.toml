@@ -9,19 +9,38 @@ readme = "README.md"
 requires-python = ">={{ cookiecutter.python_version }}"
 
 dependencies = [
+    # Core ML and data processing
+    "torch>=2.1.0",
     "transformers>=4.36.0",
     "datasets>=2.16.0",
     "accelerate>=0.25.0",
-    "torch>=2.1.0",
+    "scikit-learn>=1.3.0",
+    "polars>=0.20.0",
+    
+    # Configuration and serving
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
     "pyyaml>=6.0",
     "litserve>=0.1.0",
-    "scikit-learn>=1.3.0",
-    "polars>=0.20.0",
     "taskipy>=1.12.0",
+    
     {% if cookiecutter.use_tracelet == "yes" -%}
+    # Experiment tracking
     "tracelet>=0.1.0",
+    {% endif -%}
+    
+    {% if cookiecutter.modality == "speech" -%}
+    # Speech processing
+    "librosa>=0.10.0",
+    "soundfile>=0.12.0",
+    "torchaudio>=2.1.0",
+    {% endif -%}
+    
+    {% if cookiecutter.modality == "vision" -%}
+    # Vision processing
+    "torchvision>=0.16.0", 
+    "pillow>=10.0.0",
+    "opencv-python>=4.8.0",
     {% endif -%}
 ]
 
