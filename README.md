@@ -1,6 +1,12 @@
 # Modern ML Cookiecutter
 
+<div align="center">
+  <img src="gh-social.webp" alt="Modern ML Cookiecutter" width="600" />
+</div>
+
 🚀 A modality-aware, end-to-end template for modern machine learning projects covering **NLP**, **Speech**, and **Vision** with best-in-class models and researcher-friendly configuration.
+
+📖 **Read the story behind this template**: [Why I Built a Modern ML Cookiecutter](https://prassanna.io/blog/modern-ml/)
 
 ## ✨ Features
 
@@ -24,14 +30,18 @@
 
 ## 🚀 Quick Start
 
-1. Install cookiecutter:
+1. Install cruft (recommended) or cookiecutter:
 ```bash
-uv tool install cookiecutter
-# or: pip install cookiecutter
+uvx cruft create https://github.com/prassanna-ravishankar/cookiecutter-modern-ml
+# or: uv tool install cookiecutter && cookiecutter https://github.com/prassanna-ravishankar/cookiecutter-modern-ml
 ```
 
 2. Generate a new project:
 ```bash
+# Using cruft (recommended for template updates)
+uvx cruft create https://github.com/prassanna-ravishankar/cookiecutter-modern-ml
+
+# Using cookiecutter directly
 cookiecutter https://github.com/prassanna-ravishankar/cookiecutter-modern-ml
 ```
 
