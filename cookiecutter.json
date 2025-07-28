@@ -1,0 +1,9 @@
+{
+    "project_name": "My ML Project",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "author_name": "Your Name",
+    "author_email": "your.email@example.com",
+    "model_checkpoint": "distilbert-base-uncased",
+    "default_cloud": ["gcp", "aws", "azure"],
+    "python_version": "3.11"
+}

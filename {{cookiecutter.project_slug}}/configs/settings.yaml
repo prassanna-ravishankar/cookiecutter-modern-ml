@@ -1,0 +1,25 @@
+model:
+  checkpoint: "{{ cookiecutter.model_checkpoint }}"
+  max_length: 512
+  
+training:
+  dataset_name: "imdb"
+  num_train_epochs: 3
+  per_device_train_batch_size: 16
+  per_device_eval_batch_size: 16
+  warmup_steps: 500
+  weight_decay: 0.01
+  logging_steps: 10
+  evaluation_strategy: "epoch"
+  save_strategy: "epoch"
+  load_best_model_at_end: true
+  
+serving:
+  host: "0.0.0.0"
+  port: 8000
+  workers: 1
+  
+cloud:
+  provider: "{{ cookiecutter.default_cloud }}"
+  instance_type: "g5.xlarge"
+  region: "us-west-2"

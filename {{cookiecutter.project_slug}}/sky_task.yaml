@@ -1,0 +1,34 @@
+name: {{ cookiecutter.project_slug }}-training
+
+resources:
+  cloud: {{ cookiecutter.default_cloud }}
+  instance_type: g5.xlarge  # Single GPU instance for fine-tuning
+  disk_size: 100
+
+setup: |
+  # Install uv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.cargo/bin:$PATH"
+  
+  # Clone and install project
+  git clone . ~/{{ cookiecutter.project_slug }}
+  cd ~/{{ cookiecutter.project_slug }}
+  
+  # Install Python and dependencies
+  uv python install {{ cookiecutter.python_version }}
+  uv sync --all-extras
+
+run: |
+  cd ~/{{ cookiecutter.project_slug }}
+  source .venv/bin/activate
+  
+  # Run training with accelerate
+  accelerate launch src/models/train_model.py \
+    --output_dir ./models \
+    --num_train_epochs 3 \
+    --per_device_train_batch_size 16 \
+    --per_device_eval_batch_size 16 \
+    --warmup_steps 500 \
+    --weight_decay 0.01 \
+    --logging_dir ./logs \
+    --logging_steps 10
