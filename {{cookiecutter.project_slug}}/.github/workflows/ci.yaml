@@ -10,7 +10,6 @@ jobs:
   test:
     runs-on: {% raw %}${{ matrix.os }}{% endraw %}
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
         python-version: ['{{ cookiecutter.python_version }}']
@@ -29,38 +28,10 @@ jobs:
     - name: Install dependencies
       run: uv sync --all-extras
         
-    - name: Lint with {{ cookiecutter.code_formatter }}
+    - name: Lint and format
       run: |
-        {% if cookiecutter.code_formatter == "ruff" -%}
         uv run ruff check {{ cookiecutter.package_name }} tests
         uv run ruff format --check {{ cookiecutter.package_name }} tests
-        {% else -%}
-        uv run ruff check {{ cookiecutter.package_name }} tests
-        uv run black --check {{ cookiecutter.package_name }} tests
-        {% endif %}
         
-    {% if cookiecutter.type_checker != "none" -%}
-    - name: Type check with {{ cookiecutter.type_checker }}
-      run: uv run {{ cookiecutter.type_checker }} {{ cookiecutter.package_name }}
-    {% endif %}
-        
-    - name: Test with {{ cookiecutter.test_framework }}
-      run: |
-        {% if cookiecutter.test_framework == "pytest" -%}
-        {% if cookiecutter.code_coverage_tool != "none" -%}
-        uv run pytest tests --cov={{ cookiecutter.package_name }} --cov-report=xml
-        {% else -%}
-        uv run pytest tests
-        {% endif -%}
-        {% else -%}
-        uv run python -m unittest discover tests
-        {% endif %}
-        
-    {% if cookiecutter.code_coverage_tool == "codecov" -%}
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      if: matrix.os == 'ubuntu-latest'
-      with:
-        file: ./coverage.xml
-        fail_ci_if_error: false
-    {% endif %}
+    - name: Test
+      run: uv run pytest tests

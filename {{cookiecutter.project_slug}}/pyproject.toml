@@ -1,113 +1,39 @@
 [project]
 name = "{{ cookiecutter.project_slug }}"
-version = "{{ cookiecutter.project_version }}"
-description = "{{ cookiecutter.project_short_description }}"
+version = "0.1.0"
+description = "{{ cookiecutter.project_name }}"
 authors = [
     { name = "{{ cookiecutter.author_name }}", email = "{{ cookiecutter.author_email }}" },
 ]
 readme = "README.md"
 requires-python = ">={{ cookiecutter.python_version }}"
-license = { text = "{{ cookiecutter.project_license }}" }
-homepage = "{{ cookiecutter.project_url }}"
-repository = "{{ cookiecutter.project_url }}"
-keywords = ["machine-learning", "transformers", "{{ cookiecutter.model_task }}"]
-classifiers = [
-    "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: {{ cookiecutter.project_license }} License",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: {{ cookiecutter.python_version }}",
-    "Topic :: Scientific/Engineering :: Artificial Intelligence",
-]
 
 dependencies = [
     "transformers>=4.36.0",
     "datasets>=2.16.0",
-    {% if cookiecutter.use_accelerate == "yes" -%}
     "accelerate>=0.25.0",
-    {% endif -%}
     "torch>=2.1.0",
-    {% if cookiecutter.data_validation == "pydantic" -%}
     "pydantic>=2.5.0",
     "pydantic-settings>=2.1.0",
-    {% endif -%}
     "pyyaml>=6.0",
-    {% if cookiecutter.serving_framework == "litserve" -%}
     "litserve>=0.1.0",
-    {% elif cookiecutter.serving_framework == "fastapi" -%}
-    "fastapi>=0.104.0",
-    "uvicorn[standard]>=0.24.0",
-    {% elif cookiecutter.serving_framework == "flask" -%}
-    "flask>=3.0.0",
-    {% endif -%}
     "scikit-learn>=1.3.0",
-    {% if cookiecutter.use_polars == "yes" -%}
     "polars>=0.20.0",
-    {% endif -%}
-    {% if cookiecutter.use_dask == "yes" -%}
-    "dask[complete]>=2023.12.0",
-    {% endif -%}
     "taskipy>=1.12.0",
-    {% if cookiecutter.include_tensorboard == "yes" -%}
-    "tensorboard>=2.15.0",
+    {% if cookiecutter.use_tracelet == "yes" -%}
+    "tracelet>=0.1.0",
     {% endif -%}
 ]
 
 [project.optional-dependencies]
 dev = [
-    {% if cookiecutter.code_formatter == "ruff" -%}
     "ruff>=0.1.0",
-    {% elif cookiecutter.code_formatter == "black" -%}
-    "black>=23.0.0",
-    "ruff>=0.1.0",  # Still use ruff for linting
-    {% endif -%}
-    {% if cookiecutter.type_checker == "mypy" -%}
-    "mypy>=1.7.0",
-    {% elif cookiecutter.type_checker == "pyright" -%}
-    "pyright>=1.1.0",
-    {% endif -%}
-    {% if cookiecutter.test_framework == "pytest" -%}
     "pytest>=7.4.0",
-    {% if cookiecutter.code_coverage_tool != "none" -%}
-    "pytest-cov>=4.1.0",
-    {% endif -%}
-    {% endif -%}
-    {% if cookiecutter.run_security_checks == "yes" -%}
-    "bandit>=1.7.0",
-    "safety>=2.3.0",
-    {% endif -%}
     {% if cookiecutter.include_notebooks == "yes" -%}
     "jupyter>=1.0.0",
     "ipykernel>=6.0.0",
     {% endif -%}
 ]
-{% if cookiecutter.use_mkdocs == "yes" -%}
-docs = [
-    "mkdocs>=1.5.0",
-    "mkdocs-material>=9.0.0",
-    "mkdocstrings[python]>=0.24.0",
-]
-{% endif -%}
-{% if cookiecutter.hyperparameter_tuning == "optuna" -%}
-optuna = [
-    "optuna>=3.0.0",
-]
-{% elif cookiecutter.hyperparameter_tuning == "ray-tune" -%}
-tune = [
-    "ray[tune]>=2.0.0",
-]
-{% endif -%}
-{% if cookiecutter.experiment_tracking == "mlflow" -%}
-mlflow = [
-    "mlflow>=2.0.0",
-]
-{% elif cookiecutter.experiment_tracking == "wandb" -%}
-wandb = [
-    "wandb>=0.16.0",
-]
-{% endif %}
 
 [build-system]
 requires = ["hatchling"]
@@ -130,69 +56,12 @@ ignore = ["E501"]  # line too long
 [tool.ruff.isort]
 known-first-party = ["{{ cookiecutter.package_name }}"]
 
-{% if cookiecutter.type_checker == "mypy" -%}
-[tool.mypy]
-python_version = "{{ cookiecutter.python_version }}"
-warn_return_any = true
-warn_unused_configs = true
-disallow_untyped_defs = true
-ignore_missing_imports = true
-{% endif %}
-
-{% if cookiecutter.test_framework == "pytest" -%}
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-python_files = ["test_*.py", "*_test.py"]
-python_classes = ["Test*"]
-python_functions = ["test_*"]
-addopts = [
-    "--strict-markers",
-    "--strict-config",
-    "--verbose",
-]
-{% if cookiecutter.code_coverage_tool != "none" -%}
-addopts = [
-    "--strict-markers",
-    "--strict-config", 
-    "--verbose",
-    "--cov={{ cookiecutter.package_name }}",
-    "--cov-report=term-missing",
-    "--cov-report=html",
-    "--cov-report=xml",
-]
-{% endif -%}
-{% endif %}
-
 [tool.taskipy.tasks]
-{% if cookiecutter.code_formatter == "ruff" -%}
 lint = "ruff check {{ cookiecutter.package_name }} tests"
 format = "ruff format {{ cookiecutter.package_name }} tests"
-{% else -%}
-lint = "ruff check {{ cookiecutter.package_name }} tests"
-format = "black {{ cookiecutter.package_name }} tests"
-{% endif -%}
-{% if cookiecutter.type_checker != "none" -%}
-typecheck = "{{ cookiecutter.type_checker }} {{ cookiecutter.package_name }}"
-{% endif -%}
-{% if cookiecutter.test_framework == "pytest" -%}
 test = "pytest tests"
-{% else -%}
-test = "python -m unittest discover tests"
-{% endif -%}
-{% if cookiecutter.use_accelerate == "yes" -%}
-train-local = "accelerate launch {{ cookiecutter.package_name }}/models/train_model.py"
-{% else -%}
-train-local = "python -m {{ cookiecutter.package_name }}.models.train_model"
-{% endif -%}
-{% if cookiecutter.use_skypilot == "yes" -%}
-train-cloud = "sky launch sky_task.yaml"
-{% endif -%}
+train = "accelerate launch {{ cookiecutter.package_name }}/models/train_model.py"
 serve = "python -m {{ cookiecutter.package_name }}.deployment.serve"
-{% if cookiecutter.docker_support == "yes" -%}
-docker-build = "make build-all"
-docker-train = "make train"
-docker-serve = "make serve"
-{% endif -%}
-{% if cookiecutter.run_security_checks == "yes" -%}
-security = "bandit -r {{ cookiecutter.package_name }}/ && safety check"
+{% if cookiecutter.cloud_provider != "none" -%}
+train-cloud = "sky launch sky_task.yaml"
 {% endif %}
