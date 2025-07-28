@@ -103,14 +103,45 @@ def test_tracelet_integration():
     
     print("✅ Tracelet integration present")
 
+def test_code_quality():
+    """Test that generated code follows good practices."""
+    base_dir = Path(__file__).parent
+    template_dir = base_dir / "{{cookiecutter.project_slug}}"
+    
+    # Check Python files for basic quality
+    python_files = [
+        "{{cookiecutter.package_name}}/models/train_model.py",
+        "{{cookiecutter.package_name}}/deployment/serve.py", 
+        "{{cookiecutter.package_name}}/data_utils.py",
+        "{{cookiecutter.package_name}}/config.py"
+    ]
+    
+    for file_path in python_files:
+        full_path = template_dir / file_path
+        with open(full_path) as f:
+            content = f.read()
+        
+        # Basic checks
+        assert "import logging" in content, f"Missing logging import in {file_path}"
+        assert "def " in content, f"No functions found in {file_path}"
+        
+        # Check for proper docstrings on key files
+        if "train_model" in file_path or "serve" in file_path:
+            lines = content.split('\n')
+            has_docstring = any('"""' in line for line in lines[:20])
+            assert has_docstring, f"Missing module docstring in {file_path}"
+    
+    print("✅ Code quality checks passed")
+
 if __name__ == "__main__":
     print("🧪 Running self-tests for Modern ML Cookiecutter...")
     
     try:
         test_cookiecutter_structure()
         test_config_simplicity()
-        test_dependencies()
+        test_dependencies() 
         test_tracelet_integration()
+        test_code_quality()
         
         print("\n🎉 All tests passed! The template is ready for ML researchers.")
         print("\n📋 Quick Start:")

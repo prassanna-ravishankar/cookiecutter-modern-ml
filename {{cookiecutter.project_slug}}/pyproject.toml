@@ -51,7 +51,10 @@ select = [
     "C4", # flake8-comprehensions
     "UP", # pyupgrade
 ]
-ignore = ["E501"]  # line too long
+ignore = [
+    "E501",  # line too long
+    "F401",  # unused imports (for optional dependencies)
+]
 
 [tool.ruff.isort]
 known-first-party = ["{{ cookiecutter.package_name }}"]

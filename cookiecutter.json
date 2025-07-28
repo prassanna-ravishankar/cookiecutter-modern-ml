@@ -5,8 +5,17 @@
     "author_name": "Your Name",
     "author_email": "your.email@example.com",
     
-    "model_checkpoint": "distilbert-base-uncased",
-    "dataset_name": "imdb",
+    "modality": ["nlp", "speech", "vision"],
+    "model_checkpoint": {
+        "nlp": "distilbert-base-uncased",
+        "speech": "openai/whisper-small",
+        "vision": "google/vit-base-patch16-224"
+    },
+    "dataset_name": {
+        "nlp": "imdb",
+        "speech": "mozilla-foundation/common_voice_11_0",
+        "vision": "cifar10"
+    },
     "python_version": ["3.11", "3.10", "3.12"],
     
     "use_tracelet": ["yes", "no"],

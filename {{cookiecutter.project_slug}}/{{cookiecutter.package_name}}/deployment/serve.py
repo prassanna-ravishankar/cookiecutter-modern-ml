@@ -1,6 +1,10 @@
+"""
+Model serving API using LitServe for high-performance inference.
+"""
+
 import logging
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict
 
 import litserve as ls
 import torch
