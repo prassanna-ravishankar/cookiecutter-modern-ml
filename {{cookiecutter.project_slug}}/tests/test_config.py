@@ -10,12 +10,17 @@ def test_settings_from_yaml():
     
     {% if cookiecutter.modality == 'nlp' -%}
     assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.nlp }}"
-    {% elif cookiecutter.modality == 'speech' -%}
-    assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.speech }}"
+    assert settings.data.name == "{{ cookiecutter.dataset_name.nlp }}"
+    {% elif cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'asr' -%}
+    assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.speech_asr }}"
+    assert settings.data.name == "{{ cookiecutter.dataset_name.speech_asr }}"
+    {% elif cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'tts' -%}
+    assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.speech_tts }}"
+    assert settings.data.name == "{{ cookiecutter.dataset_name.speech_tts }}"
     {% elif cookiecutter.modality == 'vision' -%}
     assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.vision }}"
+    assert settings.data.name == "{{ cookiecutter.dataset_name.vision }}"
     {% endif -%}
-    assert settings.data.name == "{{ cookiecutter.dataset_name[cookiecutter.modality] }}"
     assert settings.training.epochs == 3
     assert settings.inference.port == 8000
     {% if cookiecutter.cloud_provider != 'none' -%}

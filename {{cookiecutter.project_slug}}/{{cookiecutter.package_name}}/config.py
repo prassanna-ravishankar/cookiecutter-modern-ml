@@ -21,13 +21,21 @@ class NLPModelConfig(BaseModel):
     num_labels: int = 2
     dropout: float = 0.1
 
-class SpeechModelConfig(BaseModel):
-    """Configuration for speech models."""
-    checkpoint: str = "{{ cookiecutter.model_checkpoint.speech if cookiecutter.modality == 'speech' else 'openai/whisper-small' }}"
+class SpeechASRModelConfig(BaseModel):
+    """Configuration for Automatic Speech Recognition (Whisper)."""
+    checkpoint: str = "{{ cookiecutter.model_checkpoint.speech_asr if cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'asr' else 'openai/whisper-small' }}"
     sample_rate: int = 16000
     max_audio_length: int = 30  # seconds
     language: str = "en"
     task: Literal["transcribe", "translate"] = "transcribe"
+
+class SpeechTTSModelConfig(BaseModel):
+    """Configuration for Text-to-Speech (CSM)."""
+    checkpoint: str = "{{ cookiecutter.model_checkpoint.speech_tts if cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'tts' else 'sesame/csm-1b' }}"
+    sample_rate: int = 24000  # CSM uses 24kHz
+    max_tokens: int = 1024
+    temperature: float = 0.8
+    voice_preset: str = "default"
 
 class VisionModelConfig(BaseModel):
     """Configuration for vision models."""
@@ -47,7 +55,11 @@ class ExperimentConfig(BaseModel):
     
 class DataConfig(BaseModel):
     """Data configuration."""
+    {% if cookiecutter.modality == 'speech' -%}
+    name: str = "{{ cookiecutter.dataset_name['speech_' + cookiecutter.speech_task] if 'speech_' + cookiecutter.speech_task in cookiecutter.dataset_name else 'mozilla-foundation/common_voice_11_0' }}"
+    {% else -%}
     name: str = "{{ cookiecutter.dataset_name[cookiecutter.modality] if cookiecutter.modality in cookiecutter.dataset_name else 'imdb' }}"
+    {% endif -%}
     train_split: str = "train"
     eval_split: str = "test"
     validation_split: Optional[str] = None
@@ -153,7 +165,11 @@ class Settings(BaseSettings):
         {% if cookiecutter.modality == 'nlp' -%}
         self.model = NLPModelConfig()
         {% elif cookiecutter.modality == 'speech' -%}
-        self.model = SpeechModelConfig()
+        {% if cookiecutter.speech_task == 'asr' -%}
+        self.model = SpeechASRModelConfig()
+        {% elif cookiecutter.speech_task == 'tts' -%}
+        self.model = SpeechTTSModelConfig()
+        {% endif -%}
         {% elif cookiecutter.modality == 'vision' -%}
         self.model = VisionModelConfig()
         {% endif -%}
@@ -172,7 +188,11 @@ class Settings(BaseSettings):
             if modality == "nlp":
                 settings.model = NLPModelConfig(**config_dict["model"])
             elif modality == "speech":
-                settings.model = SpeechModelConfig(**config_dict["model"])
+                {% if cookiecutter.speech_task == 'asr' -%}
+                settings.model = SpeechASRModelConfig(**config_dict["model"])
+                {% elif cookiecutter.speech_task == 'tts' -%}
+                settings.model = SpeechTTSModelConfig(**config_dict["model"])
+                {% endif -%}
             elif modality == "vision":
                 settings.model = VisionModelConfig(**config_dict["model"])
         

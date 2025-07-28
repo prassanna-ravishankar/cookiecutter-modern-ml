@@ -31,7 +31,7 @@ Train the model locally using Accelerate:
 uv run task train
 ```
 
-{% if cookiecutter.modality == 'nlp' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.nlp }}` model on the {{ cookiecutter.dataset_name.nlp }} dataset for sentiment classification.{% elif cookiecutter.modality == 'speech' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.speech }}` model on the {{ cookiecutter.dataset_name.speech }} dataset for speech recognition.{% elif cookiecutter.modality == 'vision' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.vision }}` model on the {{ cookiecutter.dataset_name.vision }} dataset for image classification.{% endif %}
+{% if cookiecutter.modality == 'nlp' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.nlp }}` model on the {{ cookiecutter.dataset_name.nlp }} dataset for sentiment classification.{% elif cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'asr' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.speech_asr }}` model on the {{ cookiecutter.dataset_name.speech_asr }} dataset for automatic speech recognition.{% elif cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'tts' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.speech_tts }}` model on the {{ cookiecutter.dataset_name.speech_tts }} dataset for text-to-speech generation.{% elif cookiecutter.modality == 'vision' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.vision }}` model on the {{ cookiecutter.dataset_name.vision }} dataset for image classification.{% endif %}
 
 {% if cookiecutter.cloud_provider != "none" -%}
 ### Cloud Training

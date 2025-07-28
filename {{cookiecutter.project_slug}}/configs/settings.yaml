@@ -10,7 +10,11 @@ experiment:
   gradient_checkpointing: true
 
 data:
+  {% if cookiecutter.modality == 'speech' -%}
+  name: "{{ cookiecutter.dataset_name['speech_' + cookiecutter.speech_task] }}"
+  {% else -%}
   name: "{{ cookiecutter.dataset_name[cookiecutter.modality] }}"
+  {% endif -%}
   train_split: "train"
   eval_split: "test"
   max_samples: null  # Set to limit dataset size for quick iteration
@@ -47,12 +51,18 @@ model:
   max_length: 512
   num_labels: 2
   dropout: 0.1
-  {% elif cookiecutter.modality == 'speech' -%}
-  checkpoint: "{{ cookiecutter.model_checkpoint.speech }}"
+  {% elif cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'asr' -%}
+  checkpoint: "{{ cookiecutter.model_checkpoint.speech_asr }}"
   sample_rate: 16000
   max_audio_length: 30
   language: "en"
   task: "transcribe"
+  {% elif cookiecutter.modality == 'speech' and cookiecutter.speech_task == 'tts' -%}
+  checkpoint: "{{ cookiecutter.model_checkpoint.speech_tts }}"
+  sample_rate: 24000
+  max_tokens: 1024
+  temperature: 0.8
+  voice_preset: "default"
   {% elif cookiecutter.modality == 'vision' -%}
   checkpoint: "{{ cookiecutter.model_checkpoint.vision }}"
   image_size: 224

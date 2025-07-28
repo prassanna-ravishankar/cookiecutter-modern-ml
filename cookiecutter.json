@@ -6,14 +6,17 @@
     "author_email": "your.email@example.com",
     
     "modality": ["nlp", "speech", "vision"],
+    "speech_task": ["asr", "tts"],
     "model_checkpoint": {
         "nlp": "distilbert-base-uncased",
-        "speech": "openai/whisper-small",
+        "speech_asr": "openai/whisper-small",
+        "speech_tts": "sesame/csm-1b",
         "vision": "google/vit-base-patch16-224"
     },
     "dataset_name": {
         "nlp": "imdb",
-        "speech": "mozilla-foundation/common_voice_11_0",
+        "speech_asr": "mozilla-foundation/common_voice_11_0",
+        "speech_tts": "conversational_dataset",
         "vision": "cifar10"
     },
     "python_version": ["3.11", "3.10", "3.12"],

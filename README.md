@@ -15,11 +15,12 @@
 
 ## 🎯 Supported Modalities
 
-| Modality | Model | Dataset | Key Libraries |
-|----------|-------|---------|---------------|
-| **NLP** | DistilBERT | IMDB | transformers, datasets |
-| **Speech** | Whisper | Common Voice | whisper, librosa, torchaudio |
-| **Vision** | Vision Transformer | CIFAR-10 | torchvision, PIL, opencv |
+| Modality | Task | Model | Dataset | Key Libraries |
+|----------|------|-------|---------|---------------|
+| **NLP** | Text Classification | DistilBERT | IMDB | transformers, datasets |
+| **Speech** | ASR (Speech-to-Text) | Whisper | Common Voice | transformers, librosa, torchaudio |
+| **Speech** | TTS (Text-to-Speech) | CSM (Sesame) | Conversational | transformers, CSM |
+| **Vision** | Image Classification | Vision Transformer | CIFAR-10 | torchvision, PIL, opencv |
 
 ## 🚀 Quick Start
 
@@ -36,20 +37,24 @@ cookiecutter https://github.com/prassanna-ravishankar/cookiecutter-modern-ml
 
 3. Choose your modality and configuration:
 ```
-[1/11] project_name (My ML Project): Sentiment Analysis Bot
-[2/11] Select modality:
+[1/12] project_name (My ML Project): Voice Assistant
+[2/12] Select modality:
   1 - nlp
   2 - speech  
   3 - vision
-  Choose from [1/2/3] (1): 1
-[3/11] Select use_tracelet:
+  Choose from [1/2/3] (1): 2
+[3/12] Select speech_task:
+  1 - asr
+  2 - tts
+  Choose from [1/2] (1): 2
+[4/12] Select use_tracelet:
   1 - yes
   2 - no
 ```
 
 4. Start developing:
 ```bash
-cd sentiment_analysis_bot
+cd voice_assistant
 uv sync
 uv run task train
 ```
@@ -109,12 +114,15 @@ uv run task train
 # Batch sizes adjust automatically for memory constraints
 ```
 
-### Speech: Automatic Speech Recognition
+### Speech: ASR (Whisper) or TTS (CSM)
 ```bash
-# Train Whisper on Common Voice
+# ASR: Train Whisper for speech-to-text
 uv run task train
 
-# Optimized for speech processing with librosa integration
+# TTS: Train CSM for conversational speech generation  
+uv run task train
+
+# Automatically handles audio preprocessing and evaluation metrics
 ```
 
 ## 🔧 Configuration
@@ -163,7 +171,8 @@ config = create_experiment_config(
 ### Modality-Specific Features
 
 - **NLP**: Automatic tokenizer padding, sequence classification metrics
-- **Speech**: Sample rate handling, audio preprocessing, WER metrics  
+- **Speech ASR**: 16kHz audio processing, WER metrics, Whisper optimizations  
+- **Speech TTS**: 24kHz generation, naturalness metrics, CSM conversational features
 - **Vision**: Image preprocessing, patch-based transformers, classification metrics
 
 ## 📊 Device Optimization
