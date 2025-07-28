@@ -116,7 +116,7 @@ if __name__ == "__main__":
         print("\n📋 Quick Start:")
         print("1. cookiecutter https://github.com/your-repo/cookiecutter-modern-ml")
         print("2. cd your_project && uv sync")
-        print("3. uv run train")
+        print("3. uv run task train")
         
     except AssertionError as e:
         print(f"\n❌ Test failed: {e}")

@@ -28,18 +28,20 @@ uv sync --all-extras
 Train the model locally using Accelerate:
 
 ```bash
-uv run train-local
+uv run task train
 ```
 
 This will fine-tune a `{{ cookiecutter.model_checkpoint }}` model on the IMDB dataset for sentiment classification.
 
+{% if cookiecutter.cloud_provider != "none" -%}
 ### Cloud Training
 
 Deploy training to the cloud using SkyPilot:
 
 ```bash
-uv run train-cloud
+uv run task train-cloud
 ```
+{% endif %}
 
 This will launch a training job on {{ cookiecutter.default_cloud }} using the configuration in `sky_task.yaml`.
 
@@ -49,12 +51,12 @@ This will launch a training job on {{ cookiecutter.default_cloud }} using the co
 
 Run linting:
 ```bash
-uv run lint
+uv run task lint
 ```
 
 Format code:
 ```bash
-uv run format
+uv run task format
 ```
 
 Type checking:
@@ -66,7 +68,7 @@ uv run typecheck
 
 Run tests:
 ```bash
-uv run test
+uv run task test
 ```
 
 ## 🚢 Deployment
@@ -74,7 +76,7 @@ uv run test
 After training, serve the model as a REST API:
 
 ```bash
-uv run serve
+uv run task serve
 ```
 
 The API will be available at `http://localhost:8000`.
