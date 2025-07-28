@@ -1,4 +1,4 @@
-# {{ cookiecutter.project_name }}
+# Vision Test
 
 A modern machine learning project built with the Modern ML Cookiecutter template.
 
@@ -6,7 +6,7 @@ A modern machine learning project built with the Modern ML Cookiecutter template
 
 ### Prerequisites
 
-- Python {{ cookiecutter.python_version }}+
+- Python 3.11+
 - [uv](https://github.com/astral-sh/uv) for dependency management
 
 ### Installation
@@ -31,19 +31,11 @@ Train the model locally using Accelerate:
 uv run task train
 ```
 
-{% if cookiecutter.modality == 'nlp' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.nlp }}` model on the {{ cookiecutter.dataset_name.nlp }} dataset for sentiment classification.{% elif cookiecutter.modality == 'speech' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.speech }}` model on the {{ cookiecutter.dataset_name.speech }} dataset for speech recognition.{% elif cookiecutter.modality == 'vision' -%}This will fine-tune a `{{ cookiecutter.model_checkpoint.vision }}` model on the {{ cookiecutter.dataset_name.vision }} dataset for image classification.{% endif %}
+This will fine-tune a `google/vit-base-patch16-224` model on the cifar10 dataset for image classification.
 
-{% if cookiecutter.cloud_provider != "none" -%}
-### Cloud Training
 
-Deploy training to the cloud using SkyPilot:
 
-```bash
-uv run task train-cloud
-```
-{% endif %}
-
-This will launch a training job on {{ cookiecutter.cloud_provider }} using the configuration in `sky_task.yaml`.
+This will launch a training job on none using the configuration in `sky_task.yaml`.
 
 ## 🔧 Development
 

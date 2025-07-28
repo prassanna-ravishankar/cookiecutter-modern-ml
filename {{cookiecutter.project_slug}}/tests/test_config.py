@@ -8,12 +8,19 @@ from {{ cookiecutter.package_name }}.config import Settings, get_settings
 def test_settings_from_yaml():
     settings = get_settings()
     
-    assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint }}"
-    assert settings.model.max_length == 512
-    assert settings.training.dataset_name == "imdb"
-    assert settings.training.num_train_epochs == 3
-    assert settings.serving.port == 8000
-    assert settings.cloud.provider == "{{ cookiecutter.default_cloud }}"
+    {% if cookiecutter.modality == 'nlp' -%}
+    assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.nlp }}"
+    {% elif cookiecutter.modality == 'speech' -%}
+    assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.speech }}"
+    {% elif cookiecutter.modality == 'vision' -%}
+    assert settings.model.checkpoint == "{{ cookiecutter.model_checkpoint.vision }}"
+    {% endif -%}
+    assert settings.data.name == "{{ cookiecutter.dataset_name[cookiecutter.modality] }}"
+    assert settings.training.epochs == 3
+    assert settings.inference.port == 8000
+    {% if cookiecutter.cloud_provider != 'none' -%}
+    assert settings.compute.cloud_provider == "{{ cookiecutter.cloud_provider }}"
+    {% endif -%}
 
 
 def test_settings_structure():
@@ -22,11 +29,15 @@ def test_settings_structure():
     # Test that all required attributes exist
     assert hasattr(settings, "model")
     assert hasattr(settings, "training")
-    assert hasattr(settings, "serving")
-    assert hasattr(settings, "cloud")
+    assert hasattr(settings, "inference")
+    assert hasattr(settings, "compute")
+    assert hasattr(settings, "experiment")
+    assert hasattr(settings, "data")
     
     # Test nested attributes
     assert hasattr(settings.model, "checkpoint")
-    assert hasattr(settings.training, "num_train_epochs")
-    assert hasattr(settings.serving, "host")
-    assert hasattr(settings.cloud, "instance_type")
+    assert hasattr(settings.training, "epochs")
+    assert hasattr(settings.inference, "host")
+    {% if cookiecutter.cloud_provider != 'none' -%}
+    assert hasattr(settings.compute, "cloud_provider")
+    {% endif -%}

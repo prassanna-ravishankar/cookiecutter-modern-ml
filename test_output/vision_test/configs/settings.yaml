@@ -1,16 +1,16 @@
-# {{ cookiecutter.project_name }} Configuration
+# Vision Test Configuration
 # ML-centric configuration with modality-aware settings
 
-modality: "{{ cookiecutter.modality }}"
+modality: "vision"
 
 experiment:
-  name: "{{ cookiecutter.project_slug }}_experiment"
+  name: "vision_test_experiment"
   seed: 42
   mixed_precision: true
   gradient_checkpointing: true
 
 data:
-  name: "{{ cookiecutter.dataset_name[cookiecutter.modality] }}"
+  name: "cifar10"
   train_split: "train"
   eval_split: "test"
   max_samples: null  # Set to limit dataset size for quick iteration
@@ -42,26 +42,12 @@ training:
   early_stopping_patience: 3
 
 model:
-  {% if cookiecutter.modality == 'nlp' -%}
-  checkpoint: "{{ cookiecutter.model_checkpoint.nlp }}"
-  max_length: 512
-  num_labels: 2
-  dropout: 0.1
-  {% elif cookiecutter.modality == 'speech' -%}
-  checkpoint: "{{ cookiecutter.model_checkpoint.speech }}"
-  sample_rate: 16000
-  max_audio_length: 30
-  language: "en"
-  task: "transcribe"
-  {% elif cookiecutter.modality == 'vision' -%}
-  checkpoint: "{{ cookiecutter.model_checkpoint.vision }}"
+  checkpoint: "google/vit-base-patch16-224"
   image_size: 224
   num_labels: 10
   patch_size: 16
   dropout: 0.1
-  {% endif -%}
-
-inference:
+  inference:
   # Model serving
   host: "0.0.0.0"
   port: 8000
@@ -87,10 +73,4 @@ compute:
   gradient_checkpointing: true
   dataloader_pin_memory: true
   
-  {% if cookiecutter.cloud_provider != 'none' -%}
-  # Cloud compute
-  cloud_provider: "{{ cookiecutter.cloud_provider }}"
-  instance_type: "g5.xlarge"
-  region: "us-west-2"
-  spot_instances: true
-  {% endif -%}
+  

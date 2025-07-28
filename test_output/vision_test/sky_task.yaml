@@ -1,7 +1,7 @@
-name: {{ cookiecutter.project_slug }}-training
+name: vision_test-training
 
 resources:
-  cloud: {{ cookiecutter.cloud_provider }}
+  cloud: none
   instance_type: g5.xlarge  # Single GPU instance for fine-tuning
   disk_size: 100
 
@@ -11,15 +11,15 @@ setup: |
   export PATH="$HOME/.cargo/bin:$PATH"
   
   # Clone and install project
-  git clone . ~/{{ cookiecutter.project_slug }}
-  cd ~/{{ cookiecutter.project_slug }}
+  git clone . ~/vision_test
+  cd ~/vision_test
   
   # Install Python and dependencies
-  uv python install {{ cookiecutter.python_version }}
+  uv python install 3.11
   uv sync --all-extras
 
 run: |
-  cd ~/{{ cookiecutter.project_slug }}
+  cd ~/vision_test
   source .venv/bin/activate
   
   # Run training with uv task
