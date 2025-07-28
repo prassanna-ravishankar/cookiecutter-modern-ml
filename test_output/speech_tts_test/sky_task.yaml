@@ -1,0 +1,26 @@
+name: speech_tts_test-training
+
+resources:
+  cloud: none
+  instance_type: g5.xlarge  # Single GPU instance for fine-tuning
+  disk_size: 100
+
+setup: |
+  # Install uv
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  export PATH="$HOME/.cargo/bin:$PATH"
+  
+  # Clone and install project
+  git clone . ~/speech_tts_test
+  cd ~/speech_tts_test
+  
+  # Install Python and dependencies
+  uv python install 3.11
+  uv sync --all-extras
+
+run: |
+  cd ~/speech_tts_test
+  source .venv/bin/activate
+  
+  # Run training with uv task
+  uv run task train

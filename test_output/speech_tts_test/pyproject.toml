@@ -1,7 +1,7 @@
 [project]
-name = "vision_test"
+name = "speech_tts_test"
 version = "0.1.0"
-description = "Vision Test"
+description = "Speech TTS Test"
 authors = [
     { name = "Your Name", email = "your.email@example.com" },
 ]
@@ -26,10 +26,10 @@ dependencies = [
     
     # Experiment tracking
     "tracelet>=0.1.0",
-    # Vision processing
-    "torchvision>=0.16.0", 
-    "pillow>=10.0.0",
-    "opencv-python>=4.8.0",
+    # Speech processing
+    "librosa>=0.10.0",
+    "soundfile>=0.12.0",
+    "torchaudio>=2.1.0",
     ]
 
 [project.optional-dependencies]
@@ -62,11 +62,11 @@ ignore = [
 ]
 
 [tool.ruff.isort]
-known-first-party = ["vision_test"]
+known-first-party = ["speech_tts_test"]
 
 [tool.taskipy.tasks]
-lint = "ruff check vision_test tests"
-format = "ruff format vision_test tests"
+lint = "ruff check speech_tts_test tests"
+format = "ruff format speech_tts_test tests"
 test = "pytest tests"
-train = "accelerate launch vision_test/models/train_model.py"
-serve = "python -m vision_test.deployment.serve"
+train = "accelerate launch speech_tts_test/models/train_model.py"
+serve = "python -m speech_tts_test.deployment.serve"

@@ -30,8 +30,8 @@ jobs:
         
     - name: Lint and format
       run: |
-        uv run ruff check vision_test tests
-        uv run ruff format --check vision_test tests
+        uv run ruff check speech_tts_test tests
+        uv run ruff format --check speech_tts_test tests
         
     - name: Test
       run: uv run pytest tests

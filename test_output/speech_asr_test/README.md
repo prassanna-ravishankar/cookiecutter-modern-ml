@@ -1,4 +1,4 @@
-# Vision Test
+# Speech ASR Test
 
 A modern machine learning project built with the Modern ML Cookiecutter template.
 
@@ -31,7 +31,7 @@ Train the model locally using Accelerate:
 uv run task train
 ```
 
-This will fine-tune a `google/vit-base-patch16-224` model on the cifar10 dataset for image classification.
+This will fine-tune a `openai/whisper-small` model on the mozilla-foundation/common_voice_11_0 dataset for automatic speech recognition.
 
 
 

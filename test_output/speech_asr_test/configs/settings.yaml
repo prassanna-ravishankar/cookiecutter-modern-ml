@@ -1,0 +1,76 @@
+# Speech ASR Test Configuration
+# ML-centric configuration with modality-aware settings
+
+modality: "speech"
+
+experiment:
+  name: "speech_asr_test_experiment"
+  seed: 42
+  mixed_precision: true
+  gradient_checkpointing: true
+
+data:
+  name: "mozilla-foundation/common_voice_11_0"
+  train_split: "train"
+  eval_split: "test"
+  max_samples: null  # Set to limit dataset size for quick iteration
+  preprocessing_num_workers: 4
+
+training:
+  # Core training parameters
+  epochs: 3
+  batch_size: 16
+  eval_batch_size: 32
+  
+  # Optimization
+  learning_rate: 3e-4
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  lr_scheduler: "linear"
+  
+  # Evaluation and saving
+  eval_strategy: "epoch"
+  save_strategy: "epoch"
+  save_total_limit: 2
+  
+  # Logging
+  logging_steps: 50
+  log_predictions: true
+  
+  # Early stopping (disabled by default)
+  early_stopping: false
+  early_stopping_patience: 3
+
+model:
+  checkpoint: "openai/whisper-small"
+  sample_rate: 16000
+  max_audio_length: 30
+  language: "en"
+  task: "transcribe"
+  inference:
+  # Model serving
+  host: "0.0.0.0"
+  port: 8000
+  workers: 1
+  batch_timeout: 0.1
+  max_batch_size: 8
+  
+  # Inference parameters
+  temperature: 1.0
+  do_sample: false
+  
+  # Optimization
+  torch_compile: false
+  quantization: null
+
+compute:
+  # Device settings
+  device: "auto"
+  fp16: true
+  tf32: true
+  
+  # Memory optimization
+  gradient_checkpointing: true
+  dataloader_pin_memory: true
+  
+  

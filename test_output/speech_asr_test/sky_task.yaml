@@ -1,4 +1,4 @@
-name: vision_test-training
+name: speech_asr_test-training
 
 resources:
   cloud: none
@@ -11,15 +11,15 @@ setup: |
   export PATH="$HOME/.cargo/bin:$PATH"
   
   # Clone and install project
-  git clone . ~/vision_test
-  cd ~/vision_test
+  git clone . ~/speech_asr_test
+  cd ~/speech_asr_test
   
   # Install Python and dependencies
   uv python install 3.11
   uv sync --all-extras
 
 run: |
-  cd ~/vision_test
+  cd ~/speech_asr_test
   source .venv/bin/activate
   
   # Run training with uv task

@@ -10,7 +10,7 @@ import litserve as ls
 import torch
 from transformers import AutoModelForSequenceClassification, AutoTokenizer
 
-from vision_test.config import get_settings
+from speech_asr_test.config import get_settings
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

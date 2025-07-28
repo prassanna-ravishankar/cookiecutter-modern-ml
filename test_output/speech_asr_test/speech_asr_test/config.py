@@ -21,13 +21,21 @@ class NLPModelConfig(BaseModel):
     num_labels: int = 2
     dropout: float = 0.1
 
-class SpeechModelConfig(BaseModel):
-    """Configuration for speech models."""
+class SpeechASRModelConfig(BaseModel):
+    """Configuration for Automatic Speech Recognition (Whisper)."""
     checkpoint: str = "openai/whisper-small"
     sample_rate: int = 16000
     max_audio_length: int = 30  # seconds
     language: str = "en"
     task: Literal["transcribe", "translate"] = "transcribe"
+
+class SpeechTTSModelConfig(BaseModel):
+    """Configuration for Text-to-Speech (CSM)."""
+    checkpoint: str = "sesame/csm-1b"
+    sample_rate: int = 24000  # CSM uses 24kHz
+    max_tokens: int = 1024
+    temperature: float = 0.8
+    voice_preset: str = "default"
 
 class VisionModelConfig(BaseModel):
     """Configuration for vision models."""
@@ -40,14 +48,14 @@ class VisionModelConfig(BaseModel):
 
 class ExperimentConfig(BaseModel):
     """Core experiment configuration - ML researcher focused."""
-    name: str = "vision_test_experiment"
+    name: str = "speech_asr_test_experiment"
     seed: int = 42
     mixed_precision: bool = True
     gradient_checkpointing: bool = True
     
 class DataConfig(BaseModel):
     """Data configuration."""
-    name: str = "cifar10"
+    name: str = "mozilla-foundation/common_voice_11_0"
     train_split: str = "train"
     eval_split: str = "test"
     validation_split: Optional[str] = None
@@ -123,7 +131,7 @@ class ComputeConfig(BaseModel):
     class Settings(BaseSettings):
     """Main settings class - modality-aware and ML-researcher friendly."""
     # Core experiment setup
-    modality: Literal["nlp", "speech", "vision"] = "vision"
+    modality: Literal["nlp", "speech", "vision"] = "speech"
     experiment: ExperimentConfig = ExperimentConfig()
     data: DataConfig = DataConfig()
     training: TrainingConfig = TrainingConfig()
@@ -141,7 +149,7 @@ class ComputeConfig(BaseModel):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         # Set modality-specific model config
-        self.model = VisionModelConfig()
+        self.model = SpeechASRModelConfig()
         @classmethod
     def from_yaml(cls, config_path: Path) -> "Settings":
         """Load config from YAML with modality-aware model selection."""
@@ -152,12 +160,12 @@ class ComputeConfig(BaseModel):
         
         # Override model config if specified in YAML
         if "model" in config_dict:
-            modality = config_dict.get("modality", "vision")
+            modality = config_dict.get("modality", "speech")
             if modality == "nlp":
                 settings.model = NLPModelConfig(**config_dict["model"])
             elif modality == "speech":
-                settings.model = SpeechModelConfig(**config_dict["model"])
-            elif modality == "vision":
+                settings.model = SpeechASRModelConfig(**config_dict["model"])
+                elif modality == "vision":
                 settings.model = VisionModelConfig(**config_dict["model"])
         
         return settings

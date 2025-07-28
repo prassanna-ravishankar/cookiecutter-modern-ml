@@ -2,14 +2,14 @@ from pathlib import Path
 
 import pytest
 
-from vision_test.config import Settings, get_settings
+from speech_asr_test.config import Settings, get_settings
 
 
 def test_settings_from_yaml():
     settings = get_settings()
     
-    assert settings.model.checkpoint == "google/vit-base-patch16-224"
-    assert settings.data.name == "cifar10"
+    assert settings.model.checkpoint == "openai/whisper-small"
+    assert settings.data.name == "mozilla-foundation/common_voice_11_0"
     assert settings.training.epochs == 3
     assert settings.inference.port == 8000
     def test_settings_structure():

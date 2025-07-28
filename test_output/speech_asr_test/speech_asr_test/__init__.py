@@ -1,4 +1,4 @@
-"""Vision Test - A modern ML project."""
+"""Speech ASR Test - A modern ML project."""
 
 __version__ = "0.1.0"
 __author__ = "Your Name"
